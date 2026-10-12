@@ -36,8 +36,12 @@ import io.github.halilozel1903.sheets.rememberSheetState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-/** The peek detent shows the sheet's title, place count and filters above the navigation bar. */
-val PeekDetent: SheetDetent = SheetDetent.peek(176.dp)
+/**
+ * The peek detent shows the sheet's title, place count and filters above the navigation bar, and ends at the
+ * divider under the filters (138 dp of header plus the 24 dp gesture bar), so no half cut place row peeks out
+ * under the navigation handle.
+ */
+val PeekDetent: SheetDetent = SheetDetent.peek(164.dp)
 
 /**
  * Waypoint: a map with a persistent places sheet (peek, half and full on phones, a side sheet on tablets) and a
