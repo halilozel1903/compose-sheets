@@ -76,32 +76,35 @@ fun ColumnScope.PlacesSheetContent(state: SheetState, onPlaceClick: (Place) -> U
         Pill("Top rated", selected = false)
         Pill("Roasters", selected = false)
         Pill("Wi-Fi", selected = false)
-        Pill("Outdoor seating", selected = false)
     }
     HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-    Box(
-        Modifier
+    LazyColumn(
+        modifier = Modifier
             .weight(1f)
             .fillMaxWidth(),
+        contentPadding = PaddingValues(top = 4.dp, bottom = 16.dp),
     ) {
-        LazyColumn(contentPadding = PaddingValues(top = 4.dp, bottom = 88.dp)) {
-            items(places, key = { it.id }) { place ->
-                PlaceRow(place, onClick = { onPlaceClick(place) })
-            }
+        items(places, key = { it.id }) { place ->
+            PlaceRow(place, onClick = { onPlaceClick(place) })
         }
-        // Like a maps app: at the top detent a button brings the map back.
-        if (!side && state.targetDetent == SheetDetent.Full) {
+    }
+    // Like a maps app: at the top detent a button brings the map back. It sits in its own bar under the list,
+    // so it never covers a place.
+    if (!side && state.targetDetent == SheetDetent.Full) {
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 12.dp),
+            contentAlignment = Alignment.Center,
+        ) {
             Button(
                 onClick = { scope.launch { state.animateTo(SheetDetent.Half) } },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.inverseSurface,
                     contentColor = MaterialTheme.colorScheme.inverseOnSurface,
                 ),
-                elevation = ButtonDefaults.buttonElevation(defaultElevation = 6.dp),
                 contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp),
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = 20.dp),
             ) {
                 Text("Show map", style = MaterialTheme.typography.labelLarge)
             }

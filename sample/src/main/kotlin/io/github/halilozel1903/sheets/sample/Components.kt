@@ -77,7 +77,6 @@ fun MapTopBar(modifier: Modifier = Modifier) {
             Pill("Restaurants", selected = false, elevated = true)
             Pill("Parks", selected = false, elevated = true)
             Pill("Ferry", selected = false, elevated = true)
-            Pill("Parking", selected = false, elevated = true)
         }
     }
 }

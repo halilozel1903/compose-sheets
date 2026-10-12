@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -32,6 +33,7 @@ import io.github.halilozel1903.sheets.core.SheetDetent
 import io.github.halilozel1903.sheets.core.SheetPresentation
 import io.github.halilozel1903.sheets.peek
 import io.github.halilozel1903.sheets.rememberSheetState
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 /** The peek detent shows the sheet's title, place count and filters above the navigation bar. */
@@ -68,7 +70,16 @@ fun SampleApp(scene: Scene?) {
     var comment by rememberSaveable { mutableStateOf(if (scene == Scene.Keyboard) SAMPLE_COMMENT else "") }
     var rating by rememberSaveable { mutableIntStateOf(if (scene == Scene.Keyboard) 5 else 0) }
     val commentPlace = places.firstOrNull { it.id == commentPlaceId } ?: places.first()
-    val simulateKeyboard = scene == Scene.Keyboard
+
+    // The keyboard scene opens the real system keyboard on the comment field, as tapping a place does.
+    // scripts/screenshots.sh waits until the system reports the keyboard as shown before it captures.
+    if (scene == Scene.Keyboard) {
+        LaunchedEffect(Unit) {
+            delay(800)
+            runCatching { focusRequester.requestFocus() }
+            keyboard?.show()
+        }
+    }
 
     BoxWithConstraints(Modifier.fillMaxSize()) {
         val sideSheet = policy.presentation(maxWidth.value) == SheetPresentation.SideSheet
@@ -113,7 +124,7 @@ fun SampleApp(scene: Scene?) {
                 keyboard?.hide()
                 focusManager.clearFocus()
             },
-            imeInsets = if (simulateKeyboard) simulatedImeInsets() else WindowInsets.ime,
+            imeInsets = WindowInsets.ime,
         ) {
             CommentComposer(
                 place = commentPlace,
@@ -130,10 +141,6 @@ fun SampleApp(scene: Scene?) {
                     rating = 0
                 },
             )
-        }
-
-        if (simulateKeyboard) {
-            SimulatedKeyboard(Modifier.align(Alignment.BottomCenter))
         }
     }
 }

@@ -2,9 +2,8 @@
 # Captures README screenshots of the sample app on a running emulator.
 # Drags and typing can't be timed reliably through adb, so the sample opens each screen from the `scene` extra with
 # the sheet already settled at its detent (it starts there, without an animation), so every capture is the same.
-# The system keyboard can't be opened at a reliable moment on CI either: the `keyboard` scene draws a keyboard and
-# gives the comment sheet the insets a real keyboard of that height reports, so the sheet lays out exactly as it does
-# above a real one.
+# The `keyboard` scene focuses the comment field and asks for the real system keyboard; the capture waits until the
+# system reports the keyboard as shown (and tapping the field once more if it is not), and fails otherwise.
 # Every capture is checked for the expected text and for a blank image.
 #
 #   bash scripts/screenshots.sh tablet   # pixel_tablet in landscape: the places list as a side sheet
@@ -33,8 +32,13 @@ if [ "$device" = tablet ]; then
   fresh_launch --es scene tablet
   capture "tablet-side-sheet" "$(expected_text tablet)"
 else
-  for scene in peek half full keyboard; do
+  for scene in peek half full; do
     fresh_launch --es scene "$scene"
     capture "phone-$scene" "$(expected_text "$scene")"
   done
+  # The emulator has a hardware keyboard, which hides the soft keyboard unless this is on.
+  adb shell settings put secure show_ime_with_hard_keyboard 1
+  fresh_launch --es scene keyboard
+  wait_for_ime
+  capture "phone-keyboard" "$(expected_text keyboard)"
 fi

@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
  * `--es scene <scene>` to open a fixed screen for README screenshots, with the sheet already settled:
  *
  * - `peek`, `half`, `full`: the map with the persistent places sheet at that detent (phones)
- * - `keyboard`: a place with the comment composer sheet open above the keyboard
+ * - `keyboard`: a place with the comment composer sheet open above the system keyboard
  * - `tablet`: the map with the places list in a side sheet (tablets in landscape)
  *
  * Without a scene the app starts at the map with the sheet at half.

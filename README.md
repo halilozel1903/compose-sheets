@@ -31,17 +31,15 @@ Box(Modifier.fillMaxSize()) {
 
 ## Screenshots
 
-Captured from the sample app (Waypoint, a fictional maps app) on Android emulators by CI. Each scene starts with the sheet already settled at its detent.
+Captured from the sample app (Waypoint, a fictional maps app) on Android emulators by CI. Each scene starts with the sheet already settled at its detent. The keyboard in the comment sheet screenshot is the emulator's real system keyboard: CI focuses the comment field and captures only once the system reports the keyboard as shown.
 
 | Peek | Half | Full | Comment sheet on the keyboard |
 | :---: | :---: | :---: | :---: |
-| <img src="docs/screenshots/phone-peek.png" alt="A map of Harbor Square with coffee place pins and a search bar; at the bottom the places sheet shows only its title, the place count and filter chips" width="200"> | <img src="docs/screenshots/phone-half.png" alt="The places sheet at half height showing the list of coffee places under the map" width="200"> | <img src="docs/screenshots/phone-full.png" alt="The places sheet at full height covering the map, with a Show map button at the bottom" width="200"> | <img src="docs/screenshots/phone-keyboard.png" alt="A modal comment sheet with star rating, a typed comment and a Post comment button, resting directly on the keyboard over a dimmed map" width="200"> |
+| <img src="docs/screenshots/phone-peek.png" alt="A map of Harbor Square with coffee place pins and a search bar; at the bottom the places sheet shows only its title, the place count and filter chips" width="200"> | <img src="docs/screenshots/phone-half.png" alt="The places sheet at half height showing the list of coffee places under the map" width="200"> | <img src="docs/screenshots/phone-full.png" alt="The places sheet at full height covering the map, with a Show map button in a bar under the list" width="200"> | <img src="docs/screenshots/phone-keyboard.png" alt="A modal comment sheet with star rating, a typed comment and a Post comment button, resting directly on the system keyboard over a dimmed map" width="200"> |
 
 **Tablet:** on a Pixel Tablet in landscape, `AdaptiveSheet` shows the same places list as a floating side sheet next to the map.
 
 <img src="docs/screenshots/tablet-side-sheet.png" alt="A tablet in landscape: the map fills the screen and the coffee places list floats in a rounded side sheet on the right" width="800">
-
-> The system keyboard can't be opened at a reliable moment on CI emulators, so the keyboard screenshot uses a keyboard drawn by the sample. The comment sheet gets the insets a real keyboard of the same height reports (`imeInsets = simulatedImeInsets()` in the sample), so its layout is the one it takes above a real keyboard. Running the sample normally uses the real keyboard.
 
 ## Features
 
@@ -226,7 +224,7 @@ Drags and typing can't be timed reliably through adb, so the sample opens a fixe
 adb shell am start -n io.github.halilozel1903.sheets.sample/.MainActivity --es scene half
 ```
 
-`scene` is one of `peek`, `half`, `full` (the places sheet at that detent), `keyboard` (the comment sheet on a drawn keyboard, see above) or `tablet` (the side sheet). CI captures the phone scenes on a Pixel 7 and `tablet` on a Pixel Tablet in landscape, checks each capture for the screen's text and fails on blank images.
+`scene` is one of `peek`, `half`, `full` (the places sheet at that detent), `keyboard` (the comment sheet with the system keyboard open) or `tablet` (the side sheet). CI captures the phone scenes on a Pixel 7 and `tablet` on a Pixel Tablet in landscape, checks each capture for the screen's text and fails on blank images.
 
 ## Project structure
 

@@ -139,3 +139,47 @@ ensure_landscape() {
   echo "Could not put the display in landscape ($size)." >&2
   exit 1
 }
+
+# True when the system reports the soft keyboard as shown.
+ime_shown() {
+  local imm windows
+  imm="$(adb shell dumpsys input_method 2>/dev/null || true)"
+  if grep -qE "mInputShown=true|isInputShown=true" <<< "$imm"; then return 0; fi
+  windows="$(adb shell dumpsys window InputMethod 2>/dev/null || true)"
+  if grep -qE "isOnScreen=true" <<< "$windows"; then return 0; fi
+  return 1
+}
+
+# Taps the center of the first editable text field on screen.
+tap_text_field() {
+  adb shell uiautomator dump /sdcard/window.xml > /dev/null 2>&1 || return 0
+  local bounds
+  local xml
+  xml="$(adb exec-out cat /sdcard/window.xml || true)"
+  bounds="$(printf '%s' "$xml" | grep -oE 'class="android.widget.EditText"[^>]*bounds="\[[0-9]+,[0-9]+\]\[[0-9]+,[0-9]+\]"' | head -1 | grep -oE '[0-9]+' | tail -4 | tr '\n' ' ' || true)"
+  if [ -n "$bounds" ]; then
+    set -- $bounds
+    adb shell input tap $(( ($1 + $3) / 2 )) $(( ($2 + $4) / 2 ))
+  fi
+}
+
+# Waits until the real soft keyboard is shown and has finished sliding in; fails when it never appears.
+wait_for_ime() {
+  local attempt
+  for attempt in $(seq 1 20); do
+    if ime_shown; then
+      echo "Soft keyboard is shown"
+      sleep 4
+      return 0
+    fi
+    # The app asks for the keyboard itself; tap the field as a person would if it did not come up.
+    if [ "$attempt" = 6 ] || [ "$attempt" = 12 ]; then
+      tap_text_field
+    fi
+    sleep 1
+  done
+  echo "The soft keyboard did not appear; refusing to capture the keyboard scene." >&2
+  adb shell dumpsys input_method | grep -E "mInputShown|mCurMethodId|mCurId|mShowRequested|mShowExplicitlyRequested" >&2 || true
+  adb shell ime list -s >&2 || true
+  exit 1
+}
